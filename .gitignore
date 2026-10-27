@@ -1,0 +1,43 @@
+# Python virtual environment
+.venv/
+
+# Environment variables and secrets
+.env
+.env.*
+/.secrets/
+
+# Private key and certificate material
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local database files and backups
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Frontend dependencies and builds
+node_modules/
+frontend/dist/
+
+# macOS
+.DS_Store
+# VS Code workspace settings
+.vscode/

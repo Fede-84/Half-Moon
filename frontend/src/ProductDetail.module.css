@@ -1,0 +1,162 @@
+.productPage {
+  flex: 1;
+  padding: 64px 5vw 88px;
+}
+
+.productLayout {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  align-items: start;
+  gap: clamp(36px, 7vw, 112px);
+}
+
+.gallery {
+  min-width: 0;
+  background: var(--color-surface);
+}
+
+.productImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.productInformation {
+  padding-top: 20px;
+}
+
+.category {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.productInformation h1 {
+  margin: 0 0 12px;
+  font-family: "Tangerine", cursive;
+  font-size: clamp(1.8rem, 3.5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.description {
+  margin: 0 0 18px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.material {
+  margin: 0 0 20px;
+}
+
+.price {
+  margin: 0 0 28px;
+  font-size: 1.25rem;
+}
+
+.optionLabel {
+  margin: 22px 0 10px;
+  font-weight: 500;
+}
+
+.optionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.optionButton {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-background);
+  cursor: pointer;
+}
+
+.optionButton:hover:not(:disabled) {
+  border-color: var(--color-text);
+}
+
+.optionButtonSelected {
+  border-color: var(--color-text);
+  box-shadow: inset 0 0 0 1px var(--color-text);
+}
+
+.optionButton:disabled {
+  color: var(--color-text-muted);
+  background:
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 1px),
+      var(--color-border) 50%,
+      transparent calc(50% + 1px)
+    );
+  cursor: not-allowed;
+}
+
+.availability {
+  margin: 26px 0 14px;
+  color: var(--color-text-muted);
+}
+
+.addButton {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 22px;
+  border: 1px solid var(--color-text);
+  color: var(--color-background);
+  background: var(--color-text);
+  cursor: pointer;
+}
+
+.addButton:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+.addButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.addedMessage {
+  margin: 14px 0 0;
+}
+
+.statusMessage,
+.errorMessage {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--color-text-muted);
+}
+
+.errorMessage {
+  border: 1px solid var(--color-border);
+}
+
+.errorMessage p {
+  margin: 0 0 12px;
+}
+
+@media (max-width: 760px) {
+  .productPage {
+    padding: 28px 16px 56px;
+  }
+
+  .productLayout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .productInformation {
+    padding-top: 0;
+  }
+}

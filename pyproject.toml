@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "half-moon-backend"
+version = "0.1.0"
+description = "FastAPI backend for the Half Moon omnichannel jewelry portfolio project"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "fastapi>=0.141,<0.142",
+    "uvicorn[standard]>=0.53,<0.54",
+    "email-validator>=2.3,<3",
+    "sqlalchemy>=2.0,<2.1",
+    "psycopg[binary]>=3.3,<3.4",
+    "alembic>=1.20,<1.21",
+    "pydantic-settings>=2.15,<2.16",
+    "argon2-cffi>=25.1,<26",
+    "PyJWT>=2.10,<3",
+    "cryptography>=45,<47",
+    "stripe>=16.0,<16.1",
+    "google-api-python-client>=2,<3",
+    "google-auth-oauthlib>=1.2,<2",
+    "google-auth>=2,<3",
+    "oauthlib>=3.2,<5",
+    "requests>=2.32,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1,<10",
+    "httpx2>=2.13,<3",
+]
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

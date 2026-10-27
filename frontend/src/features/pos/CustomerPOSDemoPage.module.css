@@ -1,0 +1,241 @@
+.page {
+  width: min(1280px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: var(--space-5) 5vw var(--space-6);
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+.header,
+.headerLinks,
+.total,
+.cartLine,
+.variant {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.header {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand,
+.headerLinks a,
+.receipt a {
+  color: inherit;
+}
+
+.brand {
+  font-size: var(--font-size-heading);
+  text-decoration: none;
+}
+
+.header p,
+.intro p,
+.variant p,
+.cartLine p,
+.receipt > p {
+  color: var(--color-text-muted);
+}
+
+.header p {
+  margin: var(--space-1) 0 0;
+}
+
+.intro {
+  max-width: 48rem;
+  margin: var(--space-6) 0;
+}
+
+.intro h1,
+.receipt h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 400;
+}
+
+.intro > p:last-child {
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.terminal {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+  align-items: start;
+  gap: var(--space-5);
+}
+
+.panel,
+.receipt {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: var(--font-size-heading);
+  font-weight: 500;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+.variantList,
+.cartList {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.variant {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.variant h3,
+.cartLine h3 {
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: 500;
+}
+
+.variant p,
+.cartLine p {
+  margin: var(--space-1) 0 0;
+}
+
+.cartLine {
+  flex-wrap: wrap;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.quantityButton {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-background);
+  cursor: pointer;
+}
+
+.button {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-text);
+  color: var(--color-background);
+  background: var(--color-text);
+  cursor: pointer;
+}
+
+.button:disabled,
+.quantityButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.total {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.error {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.error p {
+  margin: 0 0 var(--space-2);
+}
+
+.textButton {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.receipt {
+  max-width: 48rem;
+  margin: var(--space-6) auto 0;
+}
+
+.claimCodeLabel {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.claimCode {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.success {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.success p {
+  margin: 0;
+}
+
+@media (max-width: 48rem) {
+  .terminal {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headerLinks {
+    flex-wrap: wrap;
+  }
+}
