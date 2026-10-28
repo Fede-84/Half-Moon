@@ -173,8 +173,9 @@
 .checkoutConfirmation {
   margin: var(--space-4) clamp(var(--space-4), 5vw, var(--space-6)) 0;
   padding: var(--space-3);
-  border-left: 3px solid var(--color-text);
-  background: var(--color-surface);
+  border-left: 3px solid #5D7F98;
+  background: #EAF0F4;
+  color: #263746;
 }
 
 .textButton {
