@@ -16,11 +16,13 @@ Half Moon is an Italian boutique jewelry business with:
 
 ### Environment Naming and Current Database Status
 
-`half_moon_db` is the local primary application database, currently reached
-on loopback port `5432`; it is intended to be the hosted development database
-after the frontend is complete. It is not currently a hosted or production
-database. `half_moon_test_db` is the isolated pytest database on loopback port
-`55432`; pytest must remain restricted to that database. Migration
+The Render Production PostgreSQL service is `half-moon-db`, and its database
+name is `half_moon_db`. The local PostgreSQL database also named
+`half_moon_db`, reached on loopback port `5432`, is separate from Render
+Production. `half_moon_test_db` is the isolated local pytest database on
+loopback port `55432`; pytest must remain restricted to that database. The
+Render database was on the Free plan at the 2026-10-28 dashboard check, with
+an expiry date of 2026-11-26 unless upgraded. Migration
 `b9d4e6f13a27` for POS claim cooldowns was applied to both local databases on
 2026-10-21. On 2026-10-23, lifecycle migration `c2f40e7a91bd` was applied to
 `half_moon_test_db` first and then to `half_moon_db`. The main database's
@@ -63,16 +65,39 @@ The isolated test database is seeded with 4 products, 18 variants, 18,000
 serialized in-stock units, and 2 demo staff accounts. The password-reset and
 related auth focused run passed 14 tests. The 2026-10-21 reset and reseed
 restored those counts at revision `b9d4e6f13a27`; the primary database was
-untouched during that earlier operation. There is not yet a separately hosted
-application/database deployment. Older dated checkpoints retain the
-environment labels used when they were written.
+untouched during that earlier operation. Older dated checkpoints retain the
+environment labels used when they were written; the current hosted deployment
+and data-cleanup status is recorded here.
 
-### Current Implementation Status (2026-10-27)
+**Production acceptance and data cleanup (2026-10-28):** The deployed
+storefront was exercised with Stripe test-mode checkout. The fictional
+shipping-address defaults and warning appeared, and after a successful test
+payment the account page showed the blue confirmation only after the backend
+reported `PAID`. The order remained visible in account history after signing
+out and back in; the one-time confirmation cleared after refresh. No real
+payment was taken. Frontend lint, production build, and `git diff --check`
+passed for the confirmation styling update; the latest full backend suite
+remains the 201-test run recorded above for 2026-10-27.
+
+Before removing confirmed synthetic tester data from Render Production, a
+custom-format PostgreSQL dump was created and its archive listing was
+successfully read with `pg_restore --list` (198 table-of-contents entries).
+The archive was not fully restored or otherwise restore-tested. A
+rollback-only rehearsal preceded the user-approved committed purge. The purge
+removed four test customer accounts and their four customer records, five
+linked ECOM orders and payments, and dependent test records; it retained Stripe
+webhook-deduplication records and unrelated data. Eight serialized inventory
+units were restored to their original in-stock state and location. Read-only
+post-purge verification found zero target customers and orders and confirmed
+all eight units restored. This was a data-only operation: no schema migration,
+application-code change, or redeploy was required.
+
+### Current Implementation Status (2026-10-28)
 
 - The FastAPI application does not register `CORSMiddleware`. Local frontend
-  development uses Vite's `/api` proxy; the planned hosted setup requires a
-  same-origin `/api/*` rewrite to the backend. The Render rewrite is not yet
-  configured or verified.
+  development uses Vite's `/api` proxy. The live Render deployment uses a
+  same-origin `/api/*` rewrite to the FastAPI service; the rewrite and hosted
+  API path have been verified.
 - `POST /api/v1/webhooks/stripe` reads the raw request body once with
   `await request.body()` before signature verification. No application-defined
   global middleware or body parser was found that consumes the stream first.
@@ -86,8 +111,11 @@ environment labels used when they were written.
   files were not inspected, so their contents are not covered by this status.
   Backend credential settings are centralized in the Pydantic `Settings`
   class.
-- Frontend production compilation (`tsc -b` and Vite build) passed on
-  2026-10-27.
+- Frontend production compilation (`tsc -b` and Vite build) and lint passed on
+  2026-10-28 for the deployed checkout-confirmation styling. The latest full
+  backend suite passed all 201 tests on 2026-10-27 against the isolated pytest
+  database; the 2026-10-28 production database cleanup was verified with
+  read-only queries, not with the pytest suite.
 
 ### Local pytest PostgreSQL cluster operations (macOS)
 
@@ -218,10 +246,11 @@ The homepage hero heading “Moon Collection” uses the Tangerine font from Goo
 
 Baseline responsive breakpoints are implemented in the storefront, checkout, account, and POS CSS Modules; the product-detail layout stacks at narrow widths. Storefront drawers are capped at 420px or the viewport width. At widths of 539 CSS pixels and below, cart quantity controls use 44×44px targets; their flex row may wrap to avoid widening the drawer. Browser checks on 2026-10-26 at 320px and 390px CSS widths found no horizontal overflow on the storefront, product details, checkout, account/order history, POS claim form, customer POS demo, authenticated staff POS terminal, or POS order operations page. These checks are a responsive baseline, not complete device/browser coverage or deployment approval.
 
-### Remaining Work and Order of Completion (updated 2026-10-26)
+### Remaining Work and Order of Completion (updated 2026-10-28)
 
-Complete functional scope and acceptance work before final visual styling or
-deployment:
+The Render tester deployment is live. The following records separate
+completed acceptance from remaining operational readiness; older dated
+checkpoints below remain historical.
 
 1. **Complete:** implement the approved customer-only tester journey. The
    public `/pos-demo` flow creates an anonymous cash-only sale with shared
@@ -325,6 +354,11 @@ deployment:
    failed notifications remained unchanged. Unrelated cleanup workers were
    disabled for the run, and the worker tasks shut down gracefully. No
    persistent worker configuration was changed.
+   **Hosted checkout acceptance (2026-10-28):** A Stripe test-mode customer
+   checkout confirmed the production thank-you flow, the blue account notice,
+   and order-history persistence. The confirmation is one-time navigation
+   state and clears after refresh. The fictional shipping address is shown
+   with its production warning. No real payment was taken.
 4. **Partially complete:** responsive browser QA was run on 2026-10-26 at
    320px and 390px CSS widths across storefront, product, checkout, account,
    customer POS, staff POS, and POS operations routes. No horizontal overflow
@@ -332,20 +366,23 @@ deployment:
    and below; desktop controls remain 30×30px. Remaining visual work is final
    design approval, real-device/browser coverage, and any palette, imagery,
    spacing, or accessibility refinements requested by the user.
-5. **Pending:** Render is selected for the tester deployment, but Render
-   services and a public domain have not been supplied or verified, and the
-   deployment configuration has not been reviewed. Validate the production
-   dependency lock on Linux, review the actual Render service configuration
-   and migrations, use Stripe test-mode credentials only, verify the unified
-   domain's `/api/*` rewrite, redirect URLs, and production catalogue image
-   paths, then perform hosted smoke tests. Do not enable live Stripe
-   credentials without explicit user approval.
-   The 2026-10-27 workspace inventory found no `render.yaml`, Dockerfile,
-   Procfile, or GitHub Actions workflow; service setup therefore requires
-   explicit Render dashboard configuration or a reviewed deployment manifest.
-   `requirements-prod.lock` is present, but a Linux install was not verified:
-   Docker is unavailable, and the wheel-only cross-platform check cannot test
-   packages that may need source builds.
+5. **Complete for the current tester deployment:** The Render backend,
+   frontend static site, and PostgreSQL service are configured and live. The
+   same-origin `/api/*` rewrite, hosted health endpoint, checkout return flow,
+   and production catalogue were verified during deployment and acceptance.
+   Stripe remains in test mode for tester payments; do not enable live Stripe
+   credentials without explicit approval. The repository has no checked-in
+   `render.yaml`, Dockerfile, or Procfile; the live services are configured in
+   the Render dashboard. An independent local Linux wheel-only lock check was
+   not recorded; the deployed Render builds succeeded. Revalidate the
+   production lock after dependency changes.
+6. **Operational follow-up:** The Render Production database was on the Free
+   plan and showed an expiry date of 2026-11-26 on 2026-10-28. Upgrade or
+   migrate it before that date to avoid service interruption. The Gmail OAuth
+   consent app's Testing status and token-expiry/production-readiness
+   requirements remain an external-service concern. Real-device/browser
+   coverage and any final visual approval remain outside the checks recorded
+   here.
 
 ### Backend
 
@@ -373,10 +410,11 @@ deployment:
 - Google Gmail API (OAuth 2.0) for transactional emails
 - External image URLs
 - Mock fulfillment and shipping
-- Render is the selected tester-deployment platform. The approved target is
-  separate frontend and FastAPI services under one unified domain, with
-  `/api/*` rewritten to FastAPI. No Render services, public domain, or hosted
-  deployment have been configured or verified.
+- Render hosts the live tester deployment: a React static site, a separate
+  FastAPI service, and a PostgreSQL service. The static site's `/api/*` rewrite
+  forwards to FastAPI so browser API traffic stays same-origin. The current
+  Production database is on the Free plan and its 2026-11-26 expiry must be
+  addressed before that date.
 
 #### Stripe Test Payments for Deployed Testers
 
@@ -401,10 +439,11 @@ Mailboxlayer is optional and excluded from the first version. The Google Gmail A
 
 The browser uses relative `/api/v1` requests. During local development,
 Vite's `/api` proxy forwards requests to `http://127.0.0.1:8000`. The hosted
-target is a React static frontend and FastAPI backend under one public origin,
-with a Render `/api/*` rewrite to the backend. This same-origin design does
-not require backend CORS middleware. The Render services, domain, and rewrite
-remain unconfigured and unverified.
+deployment runs a React static frontend and FastAPI backend on Render, with a
+same-origin `/api/*` rewrite from the frontend service to the backend. The
+rewrite and hosted health endpoint have been verified. This same-origin design
+does not require backend CORS middleware. PostgreSQL is hosted separately as
+the Render Production database service.
 
 The frontend exposes only public client configuration in the reviewed source,
 including the Stripe publishable key. Backend credentials belong in the
@@ -416,7 +455,7 @@ files.
 
 `pyproject.toml` records supported dependency ranges. `requirements-prod.lock` pins only runtime dependencies; `requirements-dev.lock` pins runtime plus the `dev` extra (tests and development tools). Production must install from the production lock, while local development and tests use the dev lock. Install either lock with `python -m pip install -r <lockfile>`, then install the project itself with `python -m pip install --no-deps .` (production) or `python -m pip install --no-deps -e .` (editable development).
 
-Generate locks with `pip-tools`: `pip-compile --output-file=requirements-prod.lock pyproject.toml`, then `pip-compile --constraint=requirements-prod.lock --extra=dev --output-file=requirements-dev.lock pyproject.toml`. Regenerate both after changing dependencies, validate both locks, and run the test suites. Locks are currently resolved on macOS with Python 3.14; validate or regenerate the production lock for the Linux deployment target before deployment. `.vscode/extensions.json` records recommended extension IDs; extension versions are not runtime dependencies, but notable tooling changes should be documented.
+Generate locks with `pip-tools`: `pip-compile --output-file=requirements-prod.lock pyproject.toml`, then `pip-compile --constraint=requirements-prod.lock --extra=dev --output-file=requirements-dev.lock pyproject.toml`. Regenerate both after changing dependencies, validate both locks, and run the test suites. The production lock has been deployed successfully on Render; an independent local Linux wheel-only validation was not recorded. Revalidate the production lock for the Linux target after dependency changes. `.vscode/extensions.json` records recommended extension IDs; extension versions are not runtime dependencies, but notable tooling changes should be documented.
 
 ## API Contract Rules
 
