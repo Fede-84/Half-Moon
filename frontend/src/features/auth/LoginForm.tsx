@@ -44,6 +44,7 @@ function getSafeCustomerReturnPath(locationState: unknown): string | null {
   }
 
   if (
+    returnTo === "/" ||
     returnTo === "/checkout" ||
     returnTo === "/account" ||
     returnTo === claimOrderPath ||
@@ -473,7 +474,9 @@ export function EmailVerificationPage() {
               {notice}
             </p>
             <p className={styles.alternate}>
-              <Link to="/login">Continue to sign in</Link>
+              <Link to="/login" state={{ returnTo: "/" }}>
+                Continue to sign in
+              </Link>
             </p>
           </>
         ) : token ? (
