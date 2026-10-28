@@ -77,3 +77,5 @@ Use these details only when the app is connected to Stripe test mode. Do not ent
 - **Postal code:** Any value, if requested
 
 Complete checkout as usual. This test card does not make a real charge when used with Stripe test-mode credentials. If you are unsure whether checkout is in test mode, stop and check with the project owner before proceeding. See [Stripe's testing documentation](https://docs.stripe.com/testing) for other test scenarios.
+
+The checkout pre-fills a fictional demo shipping address. Orders submitted with it may still be recorded and affect inventory; do not use it for a real delivery.

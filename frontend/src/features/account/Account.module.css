@@ -170,6 +170,13 @@
   margin: 0 0 var(--space-2);
 }
 
+.checkoutConfirmation {
+  margin: var(--space-4) clamp(var(--space-4), 5vw, var(--space-6)) 0;
+  padding: var(--space-3);
+  border-left: 3px solid var(--color-text);
+  background: var(--color-surface);
+}
+
 .textButton {
   padding: 0;
   border: 0;

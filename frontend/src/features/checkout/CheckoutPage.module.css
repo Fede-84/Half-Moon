@@ -77,6 +77,13 @@
   background: var(--color-surface);
 }
 
+.testAddressNotice {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3);
+  border-left: 3px solid var(--color-text);
+  background: var(--color-surface);
+}
+
 .signInPrompt a {
   text-underline-offset: 5px;
 }

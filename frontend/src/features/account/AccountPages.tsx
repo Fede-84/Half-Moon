@@ -8,6 +8,8 @@ import {
 import {
   Link,
   Outlet,
+  useLocation,
+  useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
@@ -79,12 +81,71 @@ function formatOrderMoney(amount: string, currency: string): string {
   return `${amount} ${currency}`;
 }
 
+type CheckoutConfirmation = "paid" | "pending" | "closed" | "unavailable";
+
+function getCheckoutConfirmation(
+  locationState: unknown,
+): CheckoutConfirmation | null {
+  if (typeof locationState !== "object" || locationState === null) return null;
+  if (!("checkoutConfirmation" in locationState)) return null;
+
+  const confirmation = locationState.checkoutConfirmation;
+  if (
+    confirmation === "paid" ||
+    confirmation === "pending" ||
+    confirmation === "closed" ||
+    confirmation === "unavailable"
+  ) {
+    return confirmation;
+  }
+
+  return null;
+}
+
+function getCheckoutConfirmationMessage(
+  confirmation: CheckoutConfirmation,
+): string {
+  if (confirmation === "paid") {
+    return "Thank you for your order, your payment has been successful.";
+  }
+
+  if (confirmation === "pending") {
+    return "Your payment is still being confirmed. Check your orders shortly; please do not submit the payment again.";
+  }
+
+  if (confirmation === "closed") {
+    return "We could not confirm this payment. Check your orders before trying again.";
+  }
+
+  return "We could not verify your payment status. Check your orders for the latest information before trying again.";
+}
+
 export function AccountLayout() {
   const { session, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [checkoutConfirmation] = useState(() =>
+    getCheckoutConfirmation(location.state),
+  );
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const continueShoppingHref = createCollectionReturnHref(searchParams);
+
+  useEffect(() => {
+    if (getCheckoutConfirmation(location.state) === null) return;
+
+    navigate(`${location.pathname}${location.search}${location.hash}`, {
+      replace: true,
+      state: null,
+    });
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
 
   async function handleLogout() {
     if (isLoggingOut) return;
@@ -135,6 +196,12 @@ export function AccountLayout() {
       {logoutError && (
         <p className={styles.error} role="alert">
           {logoutError}
+        </p>
+      )}
+
+      {checkoutConfirmation && (
+        <p className={styles.checkoutConfirmation} role="status">
+          {getCheckoutConfirmationMessage(checkoutConfirmation)}
         </p>
       )}
 

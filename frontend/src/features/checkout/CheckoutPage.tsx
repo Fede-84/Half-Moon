@@ -27,8 +27,7 @@ import {
 import { useAuth } from "../auth/AuthProvider";
 import styles from "./CheckoutPage.module.css";
 
-const IS_DEVELOPMENT_BUILD = import.meta.env.DEV;
-const LOCAL_TEST_SHIPPING_ADDRESS = {
+const TEST_SHIPPING_ADDRESS = {
   recipientName: "Test Shopper",
   addressLine1: "1 Test Street",
   addressLine2: "",
@@ -100,25 +99,21 @@ export function CheckoutPage() {
     useState<FulfillmentMethod>("SHIPPING");
   const [recipientIsBuyer, setRecipientIsBuyer] = useState(true);
   const [recipientName, setRecipientName] = useState(
-    IS_DEVELOPMENT_BUILD ? LOCAL_TEST_SHIPPING_ADDRESS.recipientName : "",
+    TEST_SHIPPING_ADDRESS.recipientName,
   );
   const [addressLine1, setAddressLine1] = useState(
-    IS_DEVELOPMENT_BUILD ? LOCAL_TEST_SHIPPING_ADDRESS.addressLine1 : "",
+    TEST_SHIPPING_ADDRESS.addressLine1,
   );
   const [addressLine2, setAddressLine2] = useState(
-    LOCAL_TEST_SHIPPING_ADDRESS.addressLine2,
+    TEST_SHIPPING_ADDRESS.addressLine2,
   );
-  const [city, setCity] = useState(
-    IS_DEVELOPMENT_BUILD ? LOCAL_TEST_SHIPPING_ADDRESS.city : "",
-  );
-  const [region, setRegion] = useState(
-    IS_DEVELOPMENT_BUILD ? LOCAL_TEST_SHIPPING_ADDRESS.region : "",
-  );
+  const [city, setCity] = useState(TEST_SHIPPING_ADDRESS.city);
+  const [region, setRegion] = useState(TEST_SHIPPING_ADDRESS.region);
   const [postalCode, setPostalCode] = useState(
-    IS_DEVELOPMENT_BUILD ? LOCAL_TEST_SHIPPING_ADDRESS.postalCode : "",
+    TEST_SHIPPING_ADDRESS.postalCode,
   );
   const [countryCode, setCountryCode] = useState(
-    LOCAL_TEST_SHIPPING_ADDRESS.countryCode,
+    TEST_SHIPPING_ADDRESS.countryCode,
   );
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -310,6 +305,14 @@ export function CheckoutPage() {
             Your order and current stock will be checked securely before
             payment.
           </p>
+
+          {fulfillmentMethod === "SHIPPING" && (
+            <p className={styles.testAddressNotice} role="note">
+              <strong>Demo address:</strong> This prefilled shipping address
+              is fictional. Orders submitted with it may still be recorded and
+              affect inventory; do not use it for a real delivery.
+            </p>
+          )}
 
           {customerSession ? (
             <p className={styles.accountNotice}>
@@ -707,7 +710,7 @@ function CheckoutReturnPage({ success }: { success: boolean }) {
   }, [cancelCheckout, completeCheckout, success]);
 
   useEffect(() => {
-    if (!success || status === "loading" || session?.kind === "customer") {
+    if (!success || status === "loading") {
       return;
     }
 
@@ -766,21 +769,42 @@ function CheckoutReturnPage({ success }: { success: boolean }) {
         window.clearTimeout(timeoutId);
       }
     };
-  }, [checkoutSessionId, session?.kind, status, success]);
+  }, [checkoutSessionId, status, success]);
 
   if (success && status === "loading") {
     return (
       <main className={styles.resultPage}>
         <section className={styles.resultCard}>
           <p className={styles.eyebrow}>Half Moon</p>
-          <p role="status">Checking your account before opening your orders…</p>
+          <p role="status">
+            Checking your account and payment before opening your orders…
+          </p>
         </section>
       </main>
     );
   }
 
   if (success && session?.kind === "customer") {
-    return <Navigate to="/account" replace />;
+    if (paymentStatus === "checking") {
+      return (
+        <main className={styles.resultPage}>
+          <section className={styles.resultCard}>
+            <p className={styles.eyebrow}>Half Moon</p>
+            <p role="status">
+              Confirming your payment before opening your account…
+            </p>
+          </section>
+        </main>
+      );
+    }
+
+    return (
+      <Navigate
+        to="/account"
+        replace
+        state={{ checkoutConfirmation: paymentStatus }}
+      />
+    );
   }
 
   return (
