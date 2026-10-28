@@ -157,6 +157,7 @@ type StorefrontHeaderProps =
 export function StorefrontHeader(props: StorefrontHeaderProps) {
   const { pieceCount } = useCart();
   const { session } = useAuth();
+  const isCustomerSignedIn = session?.kind === "customer";
   const location = useLocation();
 
   function handleAccountClick(
@@ -169,7 +170,7 @@ export function StorefrontHeader(props: StorefrontHeaderProps) {
       event.ctrlKey ||
       event.shiftKey ||
       event.altKey ||
-      session ||
+      isCustomerSignedIn ||
       location.pathname !== "/" ||
       (location.hash !== "#collection-title" &&
         location.hash !== "#product-grid")
@@ -217,16 +218,16 @@ export function StorefrontHeader(props: StorefrontHeaderProps) {
         </Link>
         <Link
           className={styles.iconButton}
-          to="/account"
+          to={isCustomerSignedIn ? "/account" : "/login"}
           onClick={handleAccountClick}
           aria-label={
-            session
+            isCustomerSignedIn
               ? "Open customer account, signed in"
-              : "Open customer account"
+              : "Sign in to customer account"
           }
         >
           <AccountIcon />
-          {session && (
+          {isCustomerSignedIn && (
             <span
               className={styles.accountStatusDot}
               aria-hidden="true"
