@@ -66,3 +66,14 @@ Access to the protected POS requires an account provisioned by the project owner
 4. Review `migrations/` for database schema history and `seed/` for seed resources.
 5. Use the backend route definitions to confirm exact API paths; the Stripe webhook route is documented above.
 6. Project validation notes record **201 passing backend tests on October 27, 2026**. This is a historical result, not a claim that tests were rerun for this README or deployment.
+
+## Testing a payment (Stripe test mode)
+
+Use these details only when the app is connected to Stripe test mode. Do not enter real card details.
+
+- **Card number:** `4242 4242 4242 4242`
+- **Expiry date:** Any valid future date
+- **CVC:** Any three-digit number
+- **Postal code:** Any value, if requested
+
+Complete checkout as usual. This test card does not make a real charge when used with Stripe test-mode credentials. If you are unsure whether checkout is in test mode, stop and check with the project owner before proceeding. See [Stripe's testing documentation](https://docs.stripe.com/testing) for other test scenarios.
