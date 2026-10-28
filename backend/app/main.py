@@ -40,6 +40,7 @@ from backend.app.models.staff_user import StaffUser
 from backend.app.schemas.auth import (
     CustomerLoginRequest,
     CustomerRegisterRequest,
+    EmailVerificationRequest,
     PasswordResetConfirmRequest,
     PasswordResetRequest,
     RefreshTokenResponse,
@@ -164,7 +165,10 @@ from backend.app.services.refresh_sessions import (
 from backend.app.services.staff_operations import (
     transfer_inventory_units,
 )
-from backend.app.services.verification import verify_customer_email
+from backend.app.services.verification import (
+    request_customer_email_verification,
+    verify_customer_email,
+)
 
 NOTIFICATION_POLL_INTERVAL_SECONDS = 5
 FULFILLMENT_POLL_INTERVAL_SECONDS = 1
@@ -1827,6 +1831,23 @@ def verify_email(
     return {
         "verified": True,
         "message": "Email verified successfully",
+    }
+
+
+@api_router.post("/auth/verify-email/resend", status_code=202)
+def resend_customer_email_verification_route(
+    request: EmailVerificationRequest,
+    db: Session = Depends(get_db),  # noqa: B008
+):
+    request_customer_email_verification(
+        db,
+        email=str(request.email),
+    )
+    return {
+        "message": (
+            "If an unverified customer account exists, verification "
+            "instructions will be sent."
+        )
     }
 
 

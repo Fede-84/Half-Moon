@@ -100,6 +100,17 @@ export const authApi = {
     return response.data;
   },
 
+  async requestCustomerEmailVerification(
+    email: string,
+  ): Promise<AuthMessageResponse> {
+    const response = await apiClient.post<AuthMessageResponse>(
+      "/auth/verify-email/resend",
+      { email },
+    );
+
+    return response.data;
+  },
+
   async requestPasswordReset(email: string): Promise<AuthMessageResponse> {
     const response = await apiClient.post<AuthMessageResponse>(
       "/auth/password-reset/request",

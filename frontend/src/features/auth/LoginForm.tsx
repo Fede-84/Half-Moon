@@ -86,8 +86,18 @@ function SignInForm({ kind }: { kind: LoginKind }) {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [canResendVerification, setCanResendVerification] = useState(false);
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
+  const [verificationNotice, setVerificationNotice] = useState<string | null>(
+    null,
+  );
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null,
+  );
+  const isResendingVerificationRef = useRef(false);
   const isStaff = kind === "staff";
-  const isBusy = isSubmitting || status === "loading";
+  const isBusy =
+    isSubmitting || isResendingVerification || status === "loading";
 
   if (session?.kind === "staff" && isStaff) {
     return <Navigate to="/pos" replace />;
@@ -103,6 +113,9 @@ function SignInForm({ kind }: { kind: LoginKind }) {
 
     setIsSubmitting(true);
     setFormError(null);
+    setCanResendVerification(false);
+    setVerificationNotice(null);
+    setVerificationError(null);
 
     try {
       if (isStaff) {
@@ -113,9 +126,37 @@ function SignInForm({ kind }: { kind: LoginKind }) {
         navigate(customerReturnPath ?? "/", { replace: true });
       }
     } catch (error: unknown) {
-      setFormError(getErrorMessage(error));
+      const message = getErrorMessage(error);
+      setFormError(message);
+      setCanResendVerification(
+        !isStaff && message === "Email address has not been verified",
+      );
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleResendVerification() {
+    if (isBusy || isResendingVerificationRef.current || !email.trim()) return;
+
+    isResendingVerificationRef.current = true;
+    setIsResendingVerification(true);
+    setVerificationNotice(null);
+    setVerificationError(null);
+
+    try {
+      const response = await authApi.requestCustomerEmailVerification(email);
+      setVerificationNotice(response.message);
+    } catch (error: unknown) {
+      setVerificationError(
+        getErrorMessage(
+          error,
+          "Could not request a verification email. Please try again.",
+        ),
+      );
+    } finally {
+      isResendingVerificationRef.current = false;
+      setIsResendingVerification(false);
     }
   }
 
@@ -157,7 +198,13 @@ function SignInForm({ kind }: { kind: LoginKind }) {
               name="email"
               required
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setFormError(null);
+                setCanResendVerification(false);
+                setVerificationNotice(null);
+                setVerificationError(null);
+              }}
               disabled={isBusy}
             />
           </label>
@@ -179,6 +226,31 @@ function SignInForm({ kind }: { kind: LoginKind }) {
             {isSubmitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
+
+        {canResendVerification && !isStaff && (
+          <div className={styles.form}>
+            <button
+              className={styles.textButton}
+              type="button"
+              onClick={() => void handleResendVerification()}
+              disabled={isBusy}
+            >
+              {isResendingVerification
+                ? "Sending verification email..."
+                : "Resend verification email"}
+            </button>
+            {verificationNotice && (
+              <p className={styles.notice} role="status">
+                {verificationNotice}
+              </p>
+            )}
+            {verificationError && (
+              <p className={styles.error} role="alert">
+                {verificationError}
+              </p>
+            )}
+          </div>
+        )}
 
         <p className={styles.alternate}>
           {isStaff ? "Shopping at Half Moon?" : "Store staff?"}{" "}

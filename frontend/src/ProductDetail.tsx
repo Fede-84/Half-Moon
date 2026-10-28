@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import {
   catalogApi,
@@ -53,6 +53,10 @@ function ProductDetailPage() {
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const bagDialogRef = useRef<HTMLDialogElement>(null);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [slug]);
 
   useEffect(() => {
     const controller = new AbortController();

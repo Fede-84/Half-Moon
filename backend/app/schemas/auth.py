@@ -13,6 +13,10 @@ class CustomerLoginRequest(BaseModel):
     password: str = Field(min_length=1, max_length=128)
 
 
+class EmailVerificationRequest(BaseModel):
+    email: EmailStr
+
+
 class PasswordResetRequest(BaseModel):
     email: EmailStr
 

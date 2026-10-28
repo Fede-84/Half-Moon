@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type MouseEvent,
 } from "react";
 import {
   Link,
@@ -156,6 +157,33 @@ type StorefrontHeaderProps =
 export function StorefrontHeader(props: StorefrontHeaderProps) {
   const { pieceCount } = useCart();
   const { session } = useAuth();
+  const location = useLocation();
+
+  function handleAccountClick(
+    event: MouseEvent<HTMLAnchorElement>,
+  ): void {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      session ||
+      location.pathname !== "/" ||
+      (location.hash !== "#collection-title" &&
+        location.hash !== "#product-grid")
+    ) {
+      return;
+    }
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${location.pathname}${location.search}`,
+    );
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
 
   return (
     <header className={styles.header}>
@@ -190,6 +218,7 @@ export function StorefrontHeader(props: StorefrontHeaderProps) {
         <Link
           className={styles.iconButton}
           to="/account"
+          onClick={handleAccountClick}
           aria-label={
             session
               ? "Open customer account, signed in"
