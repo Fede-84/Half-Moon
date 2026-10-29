@@ -286,6 +286,7 @@ function ProductDetailPage() {
           <div className={styles.productLayout}>
             <div className={styles.gallery}>
               <ZoomableProductImage
+                key={imageUrl}
                 imageClassName={styles.productImage}
                 src={imageUrl}
                 alt={`${product.name} in ${displayColor(selectedColor ?? "")}`}
