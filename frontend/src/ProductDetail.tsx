@@ -14,6 +14,7 @@ import {
   displaySize,
   formatEuroPrice,
 } from "./catalogDisplay";
+import { ZoomableProductImage } from "./ZoomableProductImage";
 import {
   CartContent,
   StorefrontFooter,
@@ -284,8 +285,8 @@ function ProductDetailPage() {
         {!isLoading && !loadError && product && (
           <div className={styles.productLayout}>
             <div className={styles.gallery}>
-              <img
-                className={styles.productImage}
+              <ZoomableProductImage
+                imageClassName={styles.productImage}
                 src={imageUrl}
                 alt={`${product.name} in ${displayColor(selectedColor ?? "")}`}
               />

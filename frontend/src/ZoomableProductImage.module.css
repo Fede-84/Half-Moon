@@ -1,0 +1,69 @@
+.trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: inherit;
+  cursor: zoom-in;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.viewer {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  box-sizing: border-box;
+  width: min(94vw, 1100px);
+  height: min(92vh, 900px);
+  height: min(92dvh, 900px);
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 56px 0 0;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border: 0;
+  background: var(--color-background);
+}
+
+.viewer::backdrop {
+  background: rgb(0 0 0 / 78%);
+}
+
+.closeButton {
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  right: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background: var(--color-background);
+  cursor: pointer;
+}
+
+.transformViewport {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.transformContent {
+  width: 100%;
+  height: 100%;
+}
+
+.zoomImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
