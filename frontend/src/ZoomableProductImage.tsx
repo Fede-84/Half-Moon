@@ -10,7 +10,6 @@ interface ZoomableProductImageProps {
   imageClassName: string;
   loading?: "eager" | "lazy";
   src: string;
-  triggerClassName?: string;
 }
 
 export function ZoomableProductImage({
@@ -18,7 +17,6 @@ export function ZoomableProductImage({
   imageClassName,
   loading,
   src,
-  triggerClassName,
 }: ZoomableProductImageProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -45,14 +43,10 @@ export function ZoomableProductImage({
     setIsOpen(false);
   }
 
-  const triggerClasses = triggerClassName
-    ? `${styles.trigger} ${triggerClassName}`
-    : styles.trigger;
-
   return (
     <>
       <button
-        className={triggerClasses}
+        className={styles.trigger}
         type="button"
         aria-label={`Zoom in on ${alt}`}
         onClick={openZoom}

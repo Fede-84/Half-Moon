@@ -34,7 +34,6 @@ import {
   shouldDisplaySize,
 } from "./catalogDisplay";
 import { useAuth } from "./features/auth/AuthProvider";
-import { ZoomableProductImage } from "./ZoomableProductImage";
 import styles from "./Storefront.module.css";
 
 type ProductVariant = CatalogProductVariantSummary;
@@ -637,33 +636,30 @@ function StorefrontPage() {
           {!isLoading && !loadError && visibleCards.length > 0 && (
             <div className={styles.productGrid}>
               {visibleCards.map((card) => (
-                <article
+                <Link
                   className={styles.productCard}
                   key={`${card.product.id}-${card.apiColor}`}
+                  to={createProductDetailHref(
+                    card.product.slug,
+                    card.apiColor,
+                    appliedFilters,
+                  )}
                 >
-                  <ZoomableProductImage
-                    triggerClassName={styles.productImageTrigger}
-                    imageClassName={styles.productImage}
+                  <img
+                    className={styles.productImage}
                     src={card.imageUrl}
                     alt={`${card.product.name} in ${card.displayColor}`}
                     loading="lazy"
                   />
-                  <Link
-                    className={styles.productInformation}
-                    to={createProductDetailHref(
-                      card.product.slug,
-                      card.apiColor,
-                      appliedFilters,
-                    )}
-                  >
+                  <div className={styles.productInformation}>
                     <div>
                       <h3>{card.product.name}</h3>
                       <p className={styles.productPrice}>
                         {formatEuroPrice(card.variant.retail_price)}
                       </p>
                     </div>
-                  </Link>
-                </article>
+                  </div>
+                </Link>
               ))}
             </div>
           )}

@@ -171,13 +171,14 @@
 .productCard {
   min-width: 0;
   color: var(--color-text);
+  text-decoration: none;
 }
 
-.productImageTrigger:hover .productImage {
+.productCard:hover .productImage {
   opacity: 0.9;
 }
 
-.productImageTrigger:focus-visible .productImage {
+.productCard:focus-visible .productImage {
   opacity: 0.9;
 }
 
@@ -195,8 +196,6 @@
   justify-content: space-between;
   align-items: start;
   gap: 12px;
-  color: var(--color-text);
-  text-decoration: none;
 }
 
 .productInformation h3 {
